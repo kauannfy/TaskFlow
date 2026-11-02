@@ -1,0 +1,159 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7fb">
+
+    <title>{% block title %}TaskFlow{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <a class="skip-link" href="#main-content">
+        Pular para o conteúdo
+    </a>
+
+    <div class="app-shell">
+
+        <!-- Menu lateral -->
+        <aside class="sidebar" id="primary-navigation">
+
+            <div class="brand">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path
+                            d="M5 12.5 9.2 17 19 7"
+                            stroke="currentColor"
+                            stroke-width="2.4"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                </span>
+
+                <span class="brand-name">TaskFlow</span>
+            </div>
+
+            <nav class="navigation" aria-label="Navegação principal">
+                <p class="navigation-heading">Menu</p>
+
+                <ul class="navigation-list">
+
+                    {% url 'dashboard' as dashboard_url %}
+                    <li>
+                        {% if dashboard_url %}
+                            <a
+                                class="navigation-link{% if request.resolver_match.url_name == 'dashboard' %} is-active{% endif %}"
+                                href="{{ dashboard_url }}"
+                                {% if request.resolver_match.url_name == 'dashboard' %}aria-current="page"{% endif %}
+                            >
+                                <span class="navigation-icon" aria-hidden="true">⌂</span>
+                                <span>Dashboard</span>
+                            </a>
+                        {% else %}
+                            <span class="navigation-link is-unavailable" aria-disabled="true" title="Rota ainda não configurada">
+                                <span class="navigation-icon" aria-hidden="true">⌂</span>
+                                <span>Dashboard</span>
+                            </span>
+                        {% endif %}
+                    </li>
+
+                    {% url 'project_list' as project_list_url %}
+                    <li>
+                        {% if project_list_url %}
+                            <a
+                                class="navigation-link{% if request.resolver_match.url_name == 'project_list' %} is-active{% endif %}"
+                                href="{{ project_list_url }}"
+                                {% if request.resolver_match.url_name == 'project_list' %}aria-current="page"{% endif %}
+                            >
+                                <span class="navigation-icon" aria-hidden="true">▦</span>
+                                <span>Projetos</span>
+                            </a>
+                        {% else %}
+                            <span class="navigation-link is-unavailable" aria-disabled="true" title="Rota ainda não configurada">
+                                <span class="navigation-icon" aria-hidden="true">▦</span>
+                                <span>Projetos</span>
+                            </span>
+                        {% endif %}
+                    </li>
+
+                    {% url 'task_list' as task_list_url %}
+                    <li>
+                        {% if task_list_url %}
+                            <a
+                                class="navigation-link{% if request.resolver_match.url_name == 'task_list' %} is-active{% endif %}"
+                                href="{{ task_list_url }}"
+                                {% if request.resolver_match.url_name == 'task_list' %}aria-current="page"{% endif %}
+                            >
+                                <span class="navigation-icon" aria-hidden="true">☷</span>
+                                <span>Tarefas</span>
+                            </a>
+                        {% else %}
+                            <span class="navigation-link is-unavailable" aria-disabled="true" title="Rota ainda não configurada">
+                                <span class="navigation-icon" aria-hidden="true">☷</span>
+                                <span>Tarefas</span>
+                            </span>
+                        {% endif %}
+                    </li>
+
+                </ul>
+            </nav>
+
+            <footer class="sidebar-footer">
+                <span>Organize seus projetos e tarefas.</span>
+            </footer>
+
+        </aside>
+
+        <!-- Fundo para fechar o menu no celular -->
+        <button
+            class="sidebar-backdrop"
+            type="button"
+            aria-label="Fechar menu"
+            hidden
+        ></button>
+
+        <!-- Área principal -->
+        <div class="main-panel">
+
+            <header class="topbar">
+                <button
+                    class="menu-toggle"
+                    type="button"
+                    aria-controls="primary-navigation"
+                    aria-expanded="false"
+                    aria-label="Abrir menu"
+                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <h1 class="page-heading">
+                    {% block page_title %}Visão geral{% endblock %}
+                </h1>
+            </header>
+
+            <main class="content" id="main-content">
+                {% block content %}{% endblock %}
+            </main>
+
+            <footer class="page-footer">
+                <span>TaskFlow</span>
+                <span>Gerenciamento pessoal de projetos e tarefas</span>
+            </footer>
+
+        </div>
+    </div>
+
+    <script src="{% static 'core/js/main.js' %}" defer></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
