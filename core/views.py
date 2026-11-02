@@ -14,11 +14,17 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['total_projetos'] = Projeto.objects.count()
+        ctx['total_tarefas'] = Tarefa.objects.count()
         ctx['tarefas_a_fazer'] = Tarefa.objects.filter(status='a_fazer').count()
         ctx['tarefas_em_andamento'] = Tarefa.objects.filter(status='em_andamento').count()
         ctx['tarefas_concluidas'] = Tarefa.objects.filter(status='concluida').count()
         ctx['projetos_recentes'] = Projeto.objects.all()[:5]
-        ctx['tarefas_recentes'] = Tarefa.objects.select_related('projeto', 'responsavel')[:5]
+        ctx['tarefas_recentes'] = Tarefa.objects.select_related(
+            'projeto', 'responsavel'
+        ).order_by('-atualizado_em')[:5]
+        ctx['tarefas_em_aberto'] = Tarefa.objects.filter(
+            status__in=[Tarefa.Status.A_FAZER, Tarefa.Status.EM_ANDAMENTO]
+        ).select_related('projeto').order_by('-criado_em')[:5]
         return ctx
 
 

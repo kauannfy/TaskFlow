@@ -45,7 +45,7 @@
 
                 <ul class="navigation-list">
 
-                    {% url 'dashboard' as dashboard_url %}
+                    {% url 'core:dashboard' as dashboard_url %}
                     <li>
                         {% if dashboard_url %}
                             <a
@@ -64,14 +64,10 @@
                         {% endif %}
                     </li>
 
-                    {% url 'project_list' as project_list_url %}
+                    {% url 'core:projeto_lista' as project_list_url %}
                     <li>
                         {% if project_list_url %}
-                            <a
-                                class="navigation-link{% if request.resolver_match.url_name == 'project_list' %} is-active{% endif %}"
-                                href="{{ project_list_url }}"
-                                {% if request.resolver_match.url_name == 'project_list' %}aria-current="page"{% endif %}
-                            >
+                            <a class="navigation-link{% if request.resolver_match.url_name == 'projeto_lista' %} is-active{% endif %}" href="{{ project_list_url }}" {% if request.resolver_match.url_name == 'projeto_lista' %}aria-current="page"{% endif %}>
                                 <span class="navigation-icon" aria-hidden="true">▦</span>
                                 <span>Projetos</span>
                             </a>
@@ -83,14 +79,10 @@
                         {% endif %}
                     </li>
 
-                    {% url 'task_list' as task_list_url %}
+                    {% url 'core:tarefa_lista' as task_list_url %}
                     <li>
                         {% if task_list_url %}
-                            <a
-                                class="navigation-link{% if request.resolver_match.url_name == 'task_list' %} is-active{% endif %}"
-                                href="{{ task_list_url }}"
-                                {% if request.resolver_match.url_name == 'task_list' %}aria-current="page"{% endif %}
-                            >
+                            <a class="navigation-link{% if request.resolver_match.url_name == 'tarefa_lista' %} is-active{% endif %}" href="{{ task_list_url }}" {% if request.resolver_match.url_name == 'tarefa_lista' %}aria-current="page"{% endif %}>
                                 <span class="navigation-icon" aria-hidden="true">☷</span>
                                 <span>Tarefas</span>
                             </a>

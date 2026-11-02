@@ -1,0 +1,119 @@
+{% extends "core/base.html" %}
+
+{% block title %}Dashboard | TaskFlow{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+    <section class="dashboard-intro" aria-labelledby="dashboard-title">
+        <div>
+            <h2 id="dashboard-title">Visão geral</h2>
+            <p>Acompanhe seus projetos e veja quais tarefas precisam de atenção.</p>
+        </div>
+        <div class="dashboard-actions">
+            <a class="dashboard-button dashboard-button-secondary" href="{% url 'core:projeto_novo' %}">Novo projeto</a>
+            <a class="dashboard-button dashboard-button-primary" href="{% url 'core:tarefa_nova' %}">Nova tarefa</a>
+        </div>
+    </section>
+
+    <section class="dashboard-stats" aria-label="Resumo de projetos e tarefas">
+        <article class="dashboard-stat">
+            <span class="dashboard-stat-label">Projetos</span>
+            <strong class="dashboard-stat-value">{{ total_projetos }}</strong>
+            <span class="dashboard-stat-note">cadastrados</span>
+        </article>
+        <article class="dashboard-stat">
+            <span class="dashboard-stat-label">Tarefas</span>
+            <strong class="dashboard-stat-value">{{ total_tarefas }}</strong>
+            <span class="dashboard-stat-note">no total</span>
+        </article>
+        <article class="dashboard-stat dashboard-stat-pending">
+            <span class="dashboard-stat-label">Pendentes</span>
+            <strong class="dashboard-stat-value">{{ tarefas_a_fazer }}</strong>
+            <span class="dashboard-stat-note">a fazer</span>
+        </article>
+        <article class="dashboard-stat dashboard-stat-complete">
+            <span class="dashboard-stat-label">Concluídas</span>
+            <strong class="dashboard-stat-value">{{ tarefas_concluidas }}</strong>
+            <span class="dashboard-stat-note">finalizadas</span>
+        </article>
+    </section>
+
+    <div class="dashboard-sections">
+        <section class="dashboard-panel" aria-labelledby="projects-heading">
+            <div class="dashboard-panel-heading">
+                <div>
+                    <h2 id="projects-heading">Projetos recentes</h2>
+                    <p>Resumo dos projetos cadastrados mais recentemente.</p>
+                </div>
+                <a class="dashboard-text-link" href="{% url 'core:projeto_lista' %}">Ver projetos</a>
+            </div>
+
+            {% if projetos_recentes %}
+                <ul class="dashboard-project-list">
+                    {% for projeto in projetos_recentes %}
+                        <li class="dashboard-project-item">
+                            <a class="dashboard-item-title" href="{% url 'core:projeto_detalhe' projeto.pk %}">{{ projeto.nome }}</a>
+                            <span class="dashboard-badge status-{{ projeto.status }}">{{ projeto.get_status_display }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="dashboard-empty">Ainda não há projetos cadastrados.</p>
+            {% endif %}
+        </section>
+
+        <section class="dashboard-panel" aria-labelledby="open-tasks-heading">
+            <div class="dashboard-panel-heading">
+                <div>
+                    <h2 id="open-tasks-heading">Tarefas em aberto</h2>
+                    <p>Atividades pendentes ou em andamento.</p>
+                </div>
+                <a class="dashboard-text-link" href="{% url 'core:tarefa_lista' %}">Ver tarefas</a>
+            </div>
+
+            {% if tarefas_em_aberto %}
+                <ul class="dashboard-task-list">
+                    {% for tarefa in tarefas_em_aberto %}
+                        <li class="dashboard-task-item">
+                            <div class="dashboard-task-main">
+                                <a class="dashboard-item-title" href="{% url 'core:projeto_detalhe' tarefa.projeto_id %}">{{ tarefa.titulo }}</a>
+                                <a class="dashboard-task-project" href="{% url 'core:projeto_detalhe' tarefa.projeto_id %}">{{ tarefa.projeto.nome }}</a>
+                            </div>
+                            <div class="dashboard-task-meta">
+                                <span class="dashboard-badge priority-{{ tarefa.prioridade }}">{{ tarefa.get_prioridade_display }}</span>
+                                <span class="dashboard-badge status-{{ tarefa.status }}">{{ tarefa.get_status_display }}</span>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="dashboard-empty">Não há tarefas pendentes ou em andamento.</p>
+            {% endif %}
+        </section>
+    </div>
+
+    {% if tarefas_recentes %}
+        <section class="dashboard-panel dashboard-recent-panel" aria-labelledby="recent-activity-heading">
+            <div class="dashboard-panel-heading">
+                <div>
+                    <h2 id="recent-activity-heading">Atualizações recentes</h2>
+                    <p>Tarefas atualizadas mais recentemente.</p>
+                </div>
+            </div>
+            <ul class="dashboard-task-list">
+                {% for tarefa in tarefas_recentes %}
+                    <li class="dashboard-task-item">
+                        <div class="dashboard-task-main">
+                            <a class="dashboard-item-title" href="{% url 'core:projeto_detalhe' tarefa.projeto_id %}">{{ tarefa.titulo }}</a>
+                            <span class="dashboard-task-project">{{ tarefa.projeto.nome }}</span>
+                        </div>
+                        <div class="dashboard-task-meta">
+                            <span class="dashboard-badge priority-{{ tarefa.prioridade }}">{{ tarefa.get_prioridade_display }}</span>
+                            <span class="dashboard-badge status-{{ tarefa.status }}">{{ tarefa.get_status_display }}</span>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+{% endblock %}
