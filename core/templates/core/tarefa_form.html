@@ -1,0 +1,56 @@
+{% extends "core/base.html" %}
+
+{% block title %}{% if form.instance.pk %}Editar tarefa{% else %}Nova tarefa{% endif %} | TaskFlow{% endblock %}
+{% block page_title %}{% if form.instance.pk %}Editar tarefa{% else %}Nova tarefa{% endif %}{% endblock %}
+
+{% block content %}
+    <section class="project-form-page task-form-page" aria-labelledby="task-form-title">
+        <div class="project-page-intro project-form-intro">
+            <div>
+                <h2 id="task-form-title">{% if form.instance.pk %}Atualizar tarefa{% else %}Cadastrar tarefa{% endif %}</h2>
+                <p>Preencha as informações da tarefa e selecione o projeto relacionado.</p>
+            </div>
+        </div>
+
+        <form class="dashboard-panel project-form task-form" method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="project-form-errors" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+                {% if hidden.errors %}
+                    <div class="project-form-errors" role="alert">{{ hidden.errors }}</div>
+                {% endif %}
+            {% endfor %}
+
+            {% if not form.fields.projeto.queryset %}
+                <p class="task-form-notice" role="status">Cadastre um projeto antes de criar uma tarefa.</p>
+            {% endif %}
+
+            <div class="project-form-grid">
+                {% for field in form.visible_fields %}
+                    <div class="project-form-field{% if field.name == 'descricao' %} project-form-field-wide{% endif %}">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="project-form-help">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="project-form-errors" role="alert">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="project-form-actions">
+                <a class="dashboard-button dashboard-button-secondary" href="{% url 'core:tarefa_lista' %}">Cancelar</a>
+                <button class="dashboard-button dashboard-button-primary" type="submit"{% if not form.fields.projeto.queryset %} disabled{% endif %}>Salvar tarefa</button>
+            </div>
+        </form>
+    </section>
+{% endblock %}

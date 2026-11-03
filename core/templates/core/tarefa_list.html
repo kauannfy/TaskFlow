@@ -1,0 +1,102 @@
+{% extends "core/base.html" %}
+
+{% block title %}Tarefas | TaskFlow{% endblock %}
+{% block page_title %}Tarefas{% endblock %}
+
+{% block content %}
+    <section class="project-page-intro task-page-intro" aria-labelledby="tasks-title">
+        <div>
+            <h2 id="tasks-title">Suas tarefas</h2>
+            <p>Consulte as atividades e acompanhe seu andamento.</p>
+        </div>
+        <a class="dashboard-button dashboard-button-primary" href="{% url 'core:tarefa_nova' %}">Cadastrar tarefa</a>
+    </section>
+
+    <form class="dashboard-panel task-filters" method="get" aria-label="Filtrar tarefas">
+        <div class="task-filter-field">
+            <label for="filter-project">Projeto</label>
+            <select class="campo" id="filter-project" name="projeto">
+                <option value="">Todos os projetos</option>
+                {% for projeto in projetos %}
+                    <option value="{{ projeto.pk }}"{% if f_projeto == projeto.pk|stringformat:"s" %} selected{% endif %}>{{ projeto.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="task-filter-field">
+            <label for="filter-status">Status</label>
+            <select class="campo" id="filter-status" name="status">
+                <option value="">Todos os status</option>
+                {% for valor, rotulo in status_choices %}
+                    <option value="{{ valor }}"{% if f_status == valor %} selected{% endif %}>{{ rotulo }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="task-filter-field">
+            <label for="filter-priority">Prioridade</label>
+            <select class="campo" id="filter-priority" name="prioridade">
+                <option value="">Todas as prioridades</option>
+                {% for valor, rotulo in prioridade_choices %}
+                    <option value="{{ valor }}"{% if f_prioridade == valor %} selected{% endif %}>{{ rotulo }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="task-filter-actions">
+            <a class="dashboard-button dashboard-button-secondary" href="{% url 'core:tarefa_lista' %}">Limpar filtros</a>
+            <button class="dashboard-button dashboard-button-primary" type="submit">Filtrar</button>
+        </div>
+    </form>
+
+    {% if object_list %}
+        <section class="task-list" aria-label="Tarefas cadastradas">
+            {% for tarefa in object_list %}
+                <article class="dashboard-panel task-card">
+                    <div class="task-card-heading">
+                        <div class="dashboard-task-main">
+                            <h2>{{ tarefa.titulo }}</h2>
+                            <span class="dashboard-task-project">{{ tarefa.projeto.nome }}</span>
+                        </div>
+                        <span class="dashboard-badge status-{{ tarefa.status }}">{{ tarefa.get_status_display }}</span>
+                    </div>
+
+                    {% if tarefa.descricao %}
+                        <p class="task-card-description">{{ tarefa.descricao|truncatewords:35 }}</p>
+                    {% endif %}
+
+                    <dl class="task-card-details">
+                        <div>
+                            <dt>Prioridade</dt>
+                            <dd><span class="dashboard-badge priority-{{ tarefa.prioridade }}">{{ tarefa.get_prioridade_display }}</span></dd>
+                        </div>
+                        <div>
+                            <dt>Responsável</dt>
+                            <dd>{{ tarefa.nome_responsavel }}</dd>
+                        </div>
+                        <div>
+                            <dt>Prazo</dt>
+                            <dd>{{ tarefa.prazo|date:"d/m/Y"|default:"—" }}</dd>
+                        </div>
+                    </dl>
+
+                    <div class="task-card-footer">
+                        <span class="project-created">Atualizada em {{ tarefa.atualizado_em|date:"d/m/Y" }}</span>
+                        <a class="dashboard-text-link" href="{% url 'core:tarefa_editar' tarefa.pk %}">Editar tarefa</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+    {% else %}
+        <section class="dashboard-panel project-empty task-empty" aria-labelledby="empty-tasks-title">
+            <h2 id="empty-tasks-title">{% if f_projeto or f_status or f_prioridade %}Nenhuma tarefa encontrada{% else %}Nenhuma tarefa cadastrada{% endif %}</h2>
+            {% if projetos %}
+                <p>{% if f_projeto or f_status or f_prioridade %}Ajuste os filtros ou cadastre uma nova tarefa.{% else %}Cadastre uma tarefa para começar a acompanhar suas atividades.{% endif %}</p>
+                <a class="dashboard-button dashboard-button-primary" href="{% url 'core:tarefa_nova' %}">Cadastrar tarefa</a>
+            {% else %}
+                <p>Cadastre um projeto antes de adicionar tarefas.</p>
+                <a class="dashboard-button dashboard-button-primary" href="{% url 'core:projeto_novo' %}">Cadastrar projeto</a>
+            {% endif %}
+        </section>
+    {% endif %}
+{% endblock %}
