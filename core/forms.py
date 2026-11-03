@@ -4,6 +4,8 @@ from .models import Projeto, Tarefa
 
 class EstiloMixin:
     """Aplica a classe CSS 'campo' em todos os inputs."""
+    required_css_class = 'required-field'
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for campo in self.fields.values():
@@ -30,6 +32,12 @@ class ProjetoForm(EstiloMixin, forms.ModelForm):
 
 
 class TarefaForm(EstiloMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['projeto'].empty_label = 'Selecione um projeto'
+        self.fields['responsavel'].empty_label = 'Selecione um responsável'
+        self.fields['responsavel'].help_text = 'Opcional.'
+
     class Meta:
         model = Tarefa
         fields = ['projeto', 'titulo', 'descricao', 'responsavel', 'prioridade', 'status', 'prazo']

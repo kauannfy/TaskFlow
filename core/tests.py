@@ -1,4 +1,10 @@
+from datetime import datetime, timedelta, timezone as datetime_timezone
+
+from django.contrib.auth import get_user_model
+from django.conf import settings
+from django.template.defaultfilters import urlencode
 from django.test import TestCase
+from django.utils import timezone
 from django.urls import reverse
 
 from .models import Projeto, Tarefa
@@ -28,14 +34,37 @@ class ProjetoWorkflowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.redirect_chain[0][0], reverse('core:projeto_lista'))
         self.assertTrue(Projeto.objects.filter(nome='Novo projeto').exists())
-        self.assertContains(response, 'Projeto salvo com sucesso!')
+        self.assertContains(response, 'Projeto criado com sucesso!')
 
     def test_cadastro_de_projeto_invalido_nao_salva(self):
         response = self.client.post(reverse('core:projeto_novo'), {'nome': ''})
 
         self.assertEqual(response.status_code, 200)
         self.assertIn('nome', response.context['form'].errors)
+        self.assertContains(
+            response,
+            str(response.context['form'].errors['nome'][0]),
+        )
         self.assertEqual(Projeto.objects.count(), 1)
+
+    def test_campos_obrigatorios_de_projeto_sao_identificados_sem_marcar_opcionais(self):
+        create_response = self.client.get(reverse('core:projeto_novo'))
+        create_form = create_response.context['form']
+
+        self.assertEqual(create_response.status_code, 200)
+        self.assertIn('required-field', create_form['nome'].label_tag())
+        self.assertIn('required-field', create_form['status'].label_tag())
+        self.assertNotIn('required-field', create_form['descricao'].label_tag())
+        self.assertNotIn('required-field', create_form['data_inicio'].label_tag())
+
+        edit_response = self.client.get(
+            reverse('core:projeto_editar', args=[self.projeto.pk])
+        )
+        self.assertEqual(edit_response.status_code, 200)
+        self.assertIn(
+            'required-field',
+            edit_response.context['form']['nome'].label_tag(),
+        )
 
     def test_edicao_de_projeto_atualiza_dados_e_exibe_mensagem(self):
         response = self.client.post(
@@ -72,6 +101,28 @@ class ProjetoWorkflowTests(TestCase):
         empty_response = self.client.get(reverse('core:projeto_detalhe', args=[self.projeto.pk]))
         self.assertContains(empty_response, 'Este projeto ainda não possui tarefas')
 
+    def test_secao_projetos_permanece_ativa_em_todas_as_rotas(self):
+        routes = [
+            reverse('core:projeto_lista'),
+            reverse('core:projeto_novo'),
+            reverse('core:projeto_detalhe', args=[self.projeto.pk]),
+            reverse('core:projeto_editar', args=[self.projeto.pk]),
+            reverse('core:projeto_excluir', args=[self.projeto.pk]),
+        ]
+
+        for route in routes:
+            with self.subTest(route=route):
+                response = self.client.get(route)
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(
+                    response,
+                    'class="navigation-link is-active" href="/projetos/" aria-current="page"',
+                )
+                self.assertNotContains(
+                    response,
+                    'class="navigation-link is-active" href="/tarefas/"',
+                )
+
     def test_exclusao_de_projeto_exige_post_e_exibe_mensagem(self):
         url = reverse('core:projeto_excluir', args=[self.projeto.pk])
         confirmation = self.client.get(url)
@@ -93,6 +144,24 @@ class ProjetoWorkflowTests(TestCase):
         self.client.post(reverse('core:projeto_excluir', args=[self.projeto.pk]))
 
         self.assertFalse(Tarefa.objects.filter(pk=tarefa.pk).exists())
+
+    def test_confirmacao_de_exclusao_de_projeto_pluraliza_tarefas_vinculadas(self):
+        Tarefa.objects.create(projeto=self.projeto, titulo='Tarefa única')
+        url = reverse('core:projeto_excluir', args=[self.projeto.pk])
+
+        singular_response = self.client.get(url)
+        self.assertContains(
+            singular_response,
+            'A tarefa vinculada também será excluída.',
+        )
+
+        Tarefa.objects.create(projeto=self.projeto, titulo='Outra tarefa')
+        plural_response = self.client.get(url)
+        self.assertContains(
+            plural_response,
+            'As 2 tarefas vinculadas também serão excluídas.',
+        )
+        self.assertNotContains(plural_response, 'tarefa(s)')
 
 
 class TarefaWorkflowTests(TestCase):
@@ -136,6 +205,58 @@ class TarefaWorkflowTests(TestCase):
         self.assertNotContains(response, outra_tarefa.titulo)
         self.assertEqual(response.context['f_projeto'], str(self.projeto.pk))
 
+    def test_secao_tarefas_permanece_ativa_em_todas_as_rotas(self):
+        routes = [
+            reverse('core:tarefa_lista'),
+            reverse('core:tarefa_nova'),
+            reverse('core:tarefa_editar', args=[self.tarefa.pk]),
+            reverse('core:tarefa_excluir', args=[self.tarefa.pk]),
+        ]
+
+        for route in routes:
+            with self.subTest(route=route):
+                response = self.client.get(route)
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(
+                    response,
+                    'class="navigation-link is-active" href="/tarefas/" aria-current="page"',
+                )
+                self.assertNotContains(
+                    response,
+                    'class="navigation-link is-active" href="/projetos/"',
+                )
+
+    def test_tarefas_vencidas_sao_identificadas_menos_as_concluidas(self):
+        ontem = timezone.localdate() - timedelta(days=1)
+        atrasada = Tarefa.objects.create(
+            projeto=self.projeto,
+            titulo='Tarefa atrasada',
+            prazo=ontem,
+            status=Tarefa.Status.EM_ANDAMENTO,
+        )
+        concluida = Tarefa.objects.create(
+            projeto=self.projeto,
+            titulo='Tarefa concluída no prazo',
+            prazo=ontem,
+            status=Tarefa.Status.CONCLUIDA,
+        )
+
+        list_response = self.client.get(reverse('core:tarefa_lista'))
+        self.assertEqual(list_response.status_code, 200)
+        self.assertContains(list_response, 'Atrasada', count=1)
+        self.assertContains(list_response, atrasada.titulo)
+        self.assertContains(list_response, concluida.titulo)
+
+        dashboard_response = self.client.get(reverse('core:dashboard'))
+        self.assertEqual(dashboard_response.status_code, 200)
+        self.assertContains(dashboard_response, 'Atrasada', count=2)
+
+        detail_response = self.client.get(
+            reverse('core:projeto_detalhe', args=[self.projeto.pk])
+        )
+        self.assertEqual(detail_response.status_code, 200)
+        self.assertContains(detail_response, 'Atrasada', count=1)
+
     def test_cadastro_de_tarefa_vincula_projeto_e_exibe_mensagem(self):
         response = self.client.post(
             reverse('core:tarefa_nova'),
@@ -170,6 +291,56 @@ class TarefaWorkflowTests(TestCase):
         self.assertIn('projeto', response.context['form'].errors)
         self.assertIn('titulo', response.context['form'].errors)
         self.assertEqual(Tarefa.objects.count(), 1)
+
+    def test_selects_do_formulario_de_tarefa_em_cadastro_e_edicao(self):
+        responsavel = get_user_model().objects.create_user(username='responsavel')
+        tarefa_com_responsavel = Tarefa.objects.create(
+            projeto=self.projeto,
+            titulo='Tarefa atribuída',
+            responsavel=responsavel,
+        )
+
+        create_response = self.client.get(reverse('core:tarefa_nova'))
+        create_form = create_response.context['form']
+        self.assertEqual(create_response.status_code, 200)
+        self.assertEqual(
+            create_form['projeto'].field.empty_label,
+            'Selecione um projeto',
+        )
+        self.assertEqual(
+            create_form['responsavel'].field.empty_label,
+            'Selecione um responsável',
+        )
+        self.assertEqual(create_form['responsavel'].field.help_text, 'Opcional.')
+        self.assertFalse(create_form['responsavel'].field.required)
+        self.assertNotIn('required-field', create_form['responsavel'].label_tag())
+        self.assertIn('required-field', create_form['projeto'].label_tag())
+        self.assertContains(create_response, 'Opcional.')
+        self.assertIn('Selecione um projeto', str(create_form['projeto']))
+        self.assertIn(self.projeto.nome, str(create_form['projeto']))
+        self.assertIn('Selecione um responsável', str(create_form['responsavel']))
+        self.assertIn(responsavel.username, str(create_form['responsavel']))
+        self.assertEqual(create_form.instance.prioridade, Tarefa.Prioridade.MEDIA)
+        self.assertEqual(create_form.instance.status, Tarefa.Status.A_FAZER)
+
+        edit_response = self.client.get(
+            reverse('core:tarefa_editar', args=[tarefa_com_responsavel.pk])
+        )
+        edit_form = edit_response.context['form']
+        self.assertEqual(edit_response.status_code, 200)
+        self.assertEqual(
+            edit_form['responsavel'].field.help_text,
+            'Opcional.',
+        )
+        self.assertContains(edit_response, 'Opcional.')
+        self.assertIn('Selecione um projeto', str(edit_form['projeto']))
+        self.assertIn('selected', str(edit_form['projeto']))
+        self.assertIn('Selecione um responsável', str(edit_form['responsavel']))
+        self.assertIn('selected', str(edit_form['responsavel']))
+        self.assertEqual(edit_form['projeto'].value(), self.projeto.pk)
+        self.assertEqual(edit_form['responsavel'].value(), responsavel.pk)
+        self.assertEqual(edit_form.instance.projeto, self.projeto)
+        self.assertEqual(edit_form.instance.responsavel, responsavel)
 
     def test_edicao_de_tarefa_atualiza_projeto_e_exibe_mensagem(self):
         response = self.client.post(
@@ -214,8 +385,77 @@ class TarefaWorkflowTests(TestCase):
         self.assertFalse(Tarefa.objects.filter(pk=self.tarefa.pk).exists())
         self.assertContains(response, 'Tarefa excluída com sucesso!')
 
+    def test_cancelar_exclusao_preserva_contexto_de_lista_e_filtros(self):
+        lista_com_filtros = (
+            f"{reverse('core:tarefa_lista')}?status={Tarefa.Status.A_FAZER}"
+            f"&projeto={self.projeto.pk}"
+        )
+        confirmation_url = reverse('core:tarefa_excluir', args=[self.tarefa.pk])
+        response = self.client.get(
+            confirmation_url,
+            {'next': lista_com_filtros},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['cancel_url'], lista_com_filtros)
+
+    def test_link_de_exclusao_na_lista_transporta_os_filtros_para_cancelamento(self):
+        response = self.client.get(
+            reverse('core:tarefa_lista'),
+            {
+                'status': Tarefa.Status.A_FAZER,
+                'projeto': self.projeto.pk,
+            },
+        )
+        lista_com_filtros = response.wsgi_request.get_full_path()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            f"?next={urlencode(lista_com_filtros)}",
+        )
+
+        confirmation = self.client.get(
+            reverse('core:tarefa_excluir', args=[self.tarefa.pk]),
+            {'next': lista_com_filtros},
+        )
+        self.assertEqual(
+            confirmation.context['cancel_url'],
+            lista_com_filtros,
+        )
+
+    def test_cancelar_exclusao_usa_referer_local_e_rejeita_destino_externo(self):
+        confirmation_url = reverse('core:tarefa_excluir', args=[self.tarefa.pk])
+        local_origin = (
+            f"{reverse('core:tarefa_lista')}?status={Tarefa.Status.A_FAZER}"
+        )
+
+        local_response = self.client.get(
+            confirmation_url,
+            HTTP_REFERER=local_origin,
+        )
+        self.assertEqual(local_response.context['cancel_url'], local_origin)
+
+        external_response = self.client.get(
+            confirmation_url,
+            HTTP_REFERER='https://example.com/fora/',
+        )
+        self.assertEqual(
+            external_response.context['cancel_url'],
+            reverse('core:projeto_detalhe', args=[self.projeto.pk]),
+        )
+
 
 class DashboardTests(TestCase):
+    def test_fuso_horario_e_datas_locais_sao_configurados_para_fortaleza(self):
+        self.assertEqual(settings.TIME_ZONE, 'America/Fortaleza')
+        self.assertEqual(timezone.get_default_timezone_name(), 'America/Fortaleza')
+
+        instante_utc = datetime(2026, 1, 1, 2, tzinfo=datetime_timezone.utc)
+        self.assertEqual(
+            timezone.localdate(instante_utc).isoformat(),
+            '2025-12-31',
+        )
+
     def test_dashboard_indicadores_listas_links_e_estados_vazios(self):
         projeto = Projeto.objects.create(nome='Projeto do dashboard')
         pendente = Tarefa.objects.create(

@@ -87,6 +87,9 @@
                             <div class="dashboard-task-meta">
                                 <span class="dashboard-badge priority-{{ tarefa.prioridade }}">{{ tarefa.get_prioridade_display }}</span>
                                 <span class="dashboard-badge status-{{ tarefa.status }}">{{ tarefa.get_status_display }}</span>
+                                {% if tarefa.prazo and tarefa.prazo < hoje and tarefa.status != 'concluida' %}
+                                    <span class="dashboard-badge task-overdue">Atrasada</span>
+                                {% endif %}
                             </div>
                         </li>
                     {% endfor %}
@@ -115,6 +118,9 @@
                         <div class="dashboard-task-meta">
                             <span class="dashboard-badge priority-{{ tarefa.prioridade }}">{{ tarefa.get_prioridade_display }}</span>
                             <span class="dashboard-badge status-{{ tarefa.status }}">{{ tarefa.get_status_display }}</span>
+                            {% if tarefa.prazo and tarefa.prazo < hoje and tarefa.status != 'concluida' %}
+                                <span class="dashboard-badge task-overdue">Atrasada</span>
+                            {% endif %}
                         </div>
                     </li>
                 {% endfor %}

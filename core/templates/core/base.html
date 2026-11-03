@@ -67,7 +67,7 @@
                     {% url 'core:projeto_lista' as project_list_url %}
                     <li>
                         {% if project_list_url %}
-                            <a class="navigation-link{% if request.resolver_match.url_name == 'projeto_lista' %} is-active{% endif %}" href="{{ project_list_url }}" {% if request.resolver_match.url_name == 'projeto_lista' %}aria-current="page"{% endif %}>
+                            <a class="navigation-link{% if request.resolver_match.url_name == 'projeto_lista' or request.resolver_match.url_name == 'projeto_novo' or request.resolver_match.url_name == 'projeto_detalhe' or request.resolver_match.url_name == 'projeto_editar' or request.resolver_match.url_name == 'projeto_excluir' %} is-active{% endif %}" href="{{ project_list_url }}" {% if request.resolver_match.url_name == 'projeto_lista' or request.resolver_match.url_name == 'projeto_novo' or request.resolver_match.url_name == 'projeto_detalhe' or request.resolver_match.url_name == 'projeto_editar' or request.resolver_match.url_name == 'projeto_excluir' %}aria-current="page"{% endif %}>
                                 <span class="navigation-icon" aria-hidden="true">▦</span>
                                 <span>Projetos</span>
                             </a>
@@ -82,7 +82,7 @@
                     {% url 'core:tarefa_lista' as task_list_url %}
                     <li>
                         {% if task_list_url %}
-                            <a class="navigation-link{% if request.resolver_match.url_name == 'tarefa_lista' %} is-active{% endif %}" href="{{ task_list_url }}" {% if request.resolver_match.url_name == 'tarefa_lista' %}aria-current="page"{% endif %}>
+                            <a class="navigation-link{% if request.resolver_match.url_name == 'tarefa_lista' or request.resolver_match.url_name == 'tarefa_nova' or request.resolver_match.url_name == 'tarefa_editar' or request.resolver_match.url_name == 'tarefa_excluir' %} is-active{% endif %}" href="{{ task_list_url }}" {% if request.resolver_match.url_name == 'tarefa_lista' or request.resolver_match.url_name == 'tarefa_nova' or request.resolver_match.url_name == 'tarefa_editar' or request.resolver_match.url_name == 'tarefa_excluir' %}aria-current="page"{% endif %}>
                                 <span class="navigation-icon" aria-hidden="true">☷</span>
                                 <span>Tarefas</span>
                             </a>

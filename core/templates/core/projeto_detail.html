@@ -73,10 +73,13 @@
                                             <h4>{{ tarefa.titulo }}</h4>
                                             <span class="dashboard-badge priority-{{ tarefa.prioridade }}">{{ tarefa.get_prioridade_display }}</span>
                                         </div>
+                                        {% if tarefa.prazo and tarefa.prazo < hoje and tarefa.status != 'concluida' %}
+                                            <span class="dashboard-badge task-overdue">Atrasada</span>
+                                        {% endif %}
                                         <p>{{ tarefa.nome_responsavel }}</p>
                                         <div class="project-task-actions">
                                             <a class="dashboard-text-link" href="{% url 'core:tarefa_editar' tarefa.pk %}">Editar</a>
-                                            <a class="dashboard-text-link dashboard-danger-link" href="{% url 'core:tarefa_excluir' tarefa.pk %}">Excluir</a>
+                                            <a class="dashboard-text-link dashboard-danger-link" href="{% url 'core:tarefa_excluir' tarefa.pk %}?next={% url 'core:projeto_detalhe' object.pk %}">Excluir</a>
                                         </div>
                                     </li>
                                 {% endfor %}

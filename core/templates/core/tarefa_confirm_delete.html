@@ -31,7 +31,7 @@
             </dl>
             <p class="confirmation-warning">Esta ação não pode ser desfeita.</p>
             <div class="project-form-actions">
-                <a class="dashboard-button dashboard-button-secondary" href="{% url 'core:projeto_detalhe' object.projeto_id %}">Cancelar</a>
+                <a class="dashboard-button dashboard-button-secondary" href="{{ cancel_url }}">Cancelar</a>
                 <button class="dashboard-button dashboard-button-danger" type="submit">Excluir tarefa</button>
             </div>
         </form>

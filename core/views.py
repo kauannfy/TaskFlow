@@ -1,5 +1,7 @@
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView,
 )
@@ -25,6 +27,7 @@ class DashboardView(TemplateView):
         ctx['tarefas_em_aberto'] = Tarefa.objects.filter(
             status__in=[Tarefa.Status.A_FAZER, Tarefa.Status.EM_ANDAMENTO]
         ).select_related('projeto').order_by('-criado_em')[:5]
+        ctx['hoje'] = timezone.localdate()
         return ctx
 
 
@@ -55,6 +58,7 @@ class ProjetoDetailView(DetailView):
         ctx['colunas'] = [
             (rotulo, tarefas.filter(status=valor)) for valor, rotulo in Tarefa.Status.choices
         ]
+        ctx['hoje'] = timezone.localdate()
         return ctx
 
 
@@ -62,7 +66,7 @@ class ProjetoCreateView(SuccessMessageMixin, CreateView):
     model = Projeto
     form_class = ProjetoForm
     success_url = reverse_lazy('core:projeto_lista')
-    success_message = 'Projeto salvo com sucesso!'
+    success_message = 'Projeto criado com sucesso!'
 
 
 class ProjetoUpdateView(SuccessMessageMixin, UpdateView):
@@ -103,6 +107,7 @@ class TarefaListView(ListView):
         ctx['f_projeto'] = self.request.GET.get('projeto', '')
         ctx['f_status'] = self.request.GET.get('status', '')
         ctx['f_prioridade'] = self.request.GET.get('prioridade', '')
+        ctx['hoje'] = timezone.localdate()
         return ctx
 
 
@@ -134,3 +139,23 @@ class TarefaUpdateView(TarefaSucessoMixin, SuccessMessageMixin, UpdateView):
 class TarefaDeleteView(TarefaSucessoMixin, SuccessMessageMixin, DeleteView):
     model = Tarefa
     success_message = 'Tarefa excluída com sucesso!'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        request = self.request
+        candidatos = (
+            request.GET.get('next'),
+            request.META.get('HTTP_REFERER'),
+        )
+        ctx['cancel_url'] = next(
+            (
+                url for url in candidatos
+                if url and url_has_allowed_host_and_scheme(
+                    url,
+                    allowed_hosts={request.get_host()},
+                    require_https=request.is_secure(),
+                )
+            ),
+            reverse('core:projeto_detalhe', args=[self.object.projeto_id]),
+        )
+        return ctx

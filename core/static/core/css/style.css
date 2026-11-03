@@ -10,7 +10,7 @@
     --color-primary: #3157c8;
     --color-primary-dark: #2445aa;
     --color-accent: #6954c8;
-    --color-text-muted: #718096;
+    --color-text-muted: #5d687a;
     --color-border: #e5e9f1;
     --color-surface: #ffffff;
     --sidebar-width: 256px;
@@ -120,7 +120,7 @@ a:focus-visible {
 
 .navigation-heading {
     margin: 0 10px 12px;
-    color: #909bad;
+    color: #667085;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -241,11 +241,14 @@ a.navigation-link:hover {
         height: 100vh;
         height: 100dvh;
         transform: translateX(-105%);
-        transition: transform 180ms ease;
+        visibility: hidden;
+        transition: transform 180ms ease, visibility 0s linear 180ms;
     }
 
     .app-shell.is-sidebar-open .sidebar {
         transform: translateX(0);
+        visibility: visible;
+        transition: transform 180ms ease;
     }
 
     .sidebar-backdrop:not([hidden]) {
@@ -520,6 +523,10 @@ a.navigation-link:hover {
 }
 
 .dashboard-item-title {
+    display: inline-flex;
+    min-height: 40px;
+    min-width: 0;
+    align-items: center;
     overflow: hidden;
     color: #29364a;
     font-size: 13px;
@@ -574,6 +581,11 @@ a.navigation-link:hover {
     color: #ad453d;
 }
 
+.task-overdue {
+    background: #fff0ef;
+    color: #96332d;
+}
+
 .dashboard-task-item {
     display: flex;
     align-items: center;
@@ -590,6 +602,9 @@ a.navigation-link:hover {
 }
 
 .dashboard-task-project {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
     overflow: hidden;
     color: var(--color-text-muted);
     font-size: 11px;
@@ -816,6 +831,11 @@ a.navigation-link:hover {
     color: #46536a;
     font-size: 13px;
     font-weight: 600;
+}
+
+.project-form-field label.required-field::after {
+    color: #b94139;
+    content: " *";
 }
 
 .project-form .campo {

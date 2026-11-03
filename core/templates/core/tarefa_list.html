@@ -76,7 +76,12 @@
                         </div>
                         <div>
                             <dt>Prazo</dt>
-                            <dd>{{ tarefa.prazo|date:"d/m/Y"|default:"—" }}</dd>
+                            <dd>
+                                {{ tarefa.prazo|date:"d/m/Y"|default:"—" }}
+                                {% if tarefa.prazo and tarefa.prazo < hoje and tarefa.status != 'concluida' %}
+                                    <span class="dashboard-badge task-overdue">Atrasada</span>
+                                {% endif %}
+                            </dd>
                         </div>
                     </dl>
 
@@ -84,7 +89,7 @@
                         <span class="project-created">Atualizada em {{ tarefa.atualizado_em|date:"d/m/Y" }}</span>
                         <div class="task-card-actions">
                             <a class="dashboard-text-link" href="{% url 'core:tarefa_editar' tarefa.pk %}">Editar tarefa</a>
-                            <a class="dashboard-text-link dashboard-danger-link" href="{% url 'core:tarefa_excluir' tarefa.pk %}">Excluir tarefa</a>
+                            <a class="dashboard-text-link dashboard-danger-link" href="{% url 'core:tarefa_excluir' tarefa.pk %}?next={{ request.get_full_path|urlencode }}">Excluir tarefa</a>
                         </div>
                     </div>
                 </article>
