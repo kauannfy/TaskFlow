@@ -1,0 +1,57 @@
+{% extends "core/base.html" %}
+
+{% block title %}Projetos | TaskFlow{% endblock %}
+{% block page_title %}Projetos{% endblock %}
+
+{% block content %}
+    <section class="project-page-intro" aria-labelledby="projects-title">
+        <div>
+            <h2 id="projects-title">Seus projetos</h2>
+            <p>Acompanhe os projetos cadastrados e seus prazos.</p>
+        </div>
+        <a class="dashboard-button dashboard-button-primary" href="{% url 'core:projeto_novo' %}">Novo projeto</a>
+    </section>
+
+    {% if object_list %}
+        <section class="project-grid" aria-label="Projetos cadastrados">
+            {% for projeto in object_list %}
+                <article class="dashboard-panel project-card">
+                    <div class="project-card-heading">
+                        <h2>
+                            <a class="dashboard-item-title" href="{% url 'core:projeto_editar' projeto.pk %}">{{ projeto.nome }}</a>
+                        </h2>
+                        <span class="dashboard-badge status-{{ projeto.status }}">{{ projeto.get_status_display }}</span>
+                    </div>
+
+                    {% if projeto.descricao %}
+                        <p class="project-description">{{ projeto.descricao|truncatewords:30 }}</p>
+                    {% else %}
+                        <p class="project-description project-description-empty">Sem descrição.</p>
+                    {% endif %}
+
+                    <dl class="project-dates">
+                        <div>
+                            <dt>Início</dt>
+                            <dd>{{ projeto.data_inicio|date:"d/m/Y"|default:"—" }}</dd>
+                        </div>
+                        <div>
+                            <dt>Término previsto</dt>
+                            <dd>{{ projeto.data_fim_prevista|date:"d/m/Y"|default:"—" }}</dd>
+                        </div>
+                    </dl>
+
+                    <div class="project-card-footer">
+                        <span class="project-created">Criado em {{ projeto.criado_em|date:"d/m/Y" }}</span>
+                        <a class="dashboard-text-link" href="{% url 'core:projeto_editar' projeto.pk %}">Editar projeto</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+    {% else %}
+        <section class="dashboard-panel project-empty" aria-labelledby="empty-projects-title">
+            <h2 id="empty-projects-title">Nenhum projeto cadastrado</h2>
+            <p>Crie seu primeiro projeto para começar a organizar suas atividades.</p>
+            <a class="dashboard-button dashboard-button-primary" href="{% url 'core:projeto_novo' %}">Cadastrar projeto</a>
+        </section>
+    {% endif %}
+{% endblock %}

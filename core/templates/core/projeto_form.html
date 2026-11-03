@@ -1,0 +1,52 @@
+{% extends "core/base.html" %}
+
+{% block title %}{% if form.instance.pk %}Editar projeto{% else %}Novo projeto{% endif %} | TaskFlow{% endblock %}
+{% block page_title %}{% if form.instance.pk %}Editar projeto{% else %}Novo projeto{% endif %}{% endblock %}
+
+{% block content %}
+    <section class="project-form-page" aria-labelledby="project-form-title">
+        <div class="project-page-intro project-form-intro">
+            <div>
+                <h2 id="project-form-title">{% if form.instance.pk %}Atualizar projeto{% else %}Cadastrar projeto{% endif %}</h2>
+                <p>Preencha os dados do projeto. Descrição e datas podem ficar em branco.</p>
+            </div>
+        </div>
+
+        <form class="dashboard-panel project-form" method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="project-form-errors" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+                {% if hidden.errors %}
+                    <div class="project-form-errors" role="alert">{{ hidden.errors }}</div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="project-form-grid">
+                {% for field in form.visible_fields %}
+                    <div class="project-form-field{% if field.name == 'descricao' %} project-form-field-wide{% endif %}">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="project-form-help">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="project-form-errors" role="alert">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="project-form-actions">
+                <a class="dashboard-button dashboard-button-secondary" href="{% url 'core:projeto_lista' %}">Cancelar</a>
+                <button class="dashboard-button dashboard-button-primary" type="submit">Salvar projeto</button>
+            </div>
+        </form>
+    </section>
+{% endblock %}
