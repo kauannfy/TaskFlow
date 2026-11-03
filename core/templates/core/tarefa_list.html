@@ -56,7 +56,7 @@
                     <div class="task-card-heading">
                         <div class="dashboard-task-main">
                             <h2>{{ tarefa.titulo }}</h2>
-                            <span class="dashboard-task-project">{{ tarefa.projeto.nome }}</span>
+                            <a class="dashboard-task-project" href="{% url 'core:projeto_detalhe' tarefa.projeto_id %}">{{ tarefa.projeto.nome }}</a>
                         </div>
                         <span class="dashboard-badge status-{{ tarefa.status }}">{{ tarefa.get_status_display }}</span>
                     </div>
@@ -82,7 +82,10 @@
 
                     <div class="task-card-footer">
                         <span class="project-created">Atualizada em {{ tarefa.atualizado_em|date:"d/m/Y" }}</span>
-                        <a class="dashboard-text-link" href="{% url 'core:tarefa_editar' tarefa.pk %}">Editar tarefa</a>
+                        <div class="task-card-actions">
+                            <a class="dashboard-text-link" href="{% url 'core:tarefa_editar' tarefa.pk %}">Editar tarefa</a>
+                            <a class="dashboard-text-link dashboard-danger-link" href="{% url 'core:tarefa_excluir' tarefa.pk %}">Excluir tarefa</a>
+                        </div>
                     </div>
                 </article>
             {% endfor %}

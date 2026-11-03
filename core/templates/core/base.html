@@ -24,7 +24,7 @@
         <!-- Menu lateral -->
         <aside class="sidebar" id="primary-navigation">
 
-            <div class="brand">
+            <a class="brand" href="{% url 'core:dashboard' %}" aria-label="TaskFlow, ir para o Dashboard"{% if request.resolver_match.url_name == 'dashboard' %} aria-current="page"{% endif %}>
                 <span class="brand-mark" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path
@@ -38,7 +38,7 @@
                 </span>
 
                 <span class="brand-name">TaskFlow</span>
-            </div>
+            </a>
 
             <nav class="navigation" aria-label="Navegação principal">
                 <p class="navigation-heading">Menu</p>
@@ -133,6 +133,15 @@
             </header>
 
             <main class="content" id="main-content">
+                {% if messages %}
+                    <div class="message-list" aria-label="Mensagens do sistema">
+                        {% for message in messages %}
+                            <div class="message message-{{ message.tags|default:'info' }}" role="{% if 'error' in message.tags or 'warning' in message.tags %}alert{% else %}status{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 {% block content %}{% endblock %}
             </main>
 

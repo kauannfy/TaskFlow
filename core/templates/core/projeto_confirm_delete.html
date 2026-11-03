@@ -1,0 +1,29 @@
+{% extends "core/base.html" %}
+
+{% block title %}Excluir projeto | TaskFlow{% endblock %}
+{% block page_title %}Excluir projeto{% endblock %}
+
+{% block content %}
+    <section class="project-form-page confirmation-page" aria-labelledby="delete-project-title">
+        <div class="project-page-intro">
+            <div>
+                <h2 id="delete-project-title">Confirmar exclusão</h2>
+                <p>Revise o impacto antes de excluir este projeto.</p>
+            </div>
+        </div>
+
+        <form class="dashboard-panel confirmation-card" method="post">
+            {% csrf_token %}
+            <p>Tem certeza de que deseja excluir o projeto <strong>{{ object.nome }}</strong>?</p>
+            {% if object.tarefas.exists %}
+                <p class="confirmation-warning">As {{ object.tarefas.count }} tarefa(s) vinculadas também serão excluídas. Esta ação não pode ser desfeita.</p>
+            {% else %}
+                <p class="confirmation-warning">Esta ação não pode ser desfeita.</p>
+            {% endif %}
+            <div class="project-form-actions">
+                <a class="dashboard-button dashboard-button-secondary" href="{% url 'core:projeto_detalhe' object.pk %}">Cancelar</a>
+                <button class="dashboard-button dashboard-button-danger" type="submit">Excluir projeto</button>
+            </div>
+        </form>
+    </section>
+{% endblock %}

@@ -2,7 +2,7 @@
 
 ## 1. Apresentação do sistema
 
-O **TaskFlow** é um sistema web desenvolvido com a finalidade de facilitar a organização, o gerenciamento e o acompanhamento de projetos e tarefas. A aplicação permitirá que os usuários cadastrem projetos, distribuam atividades, definam responsáveis e prioridades e acompanhem o andamento de cada tarefa.
+O **TaskFlow** é um sistema web de uso individual desenvolvido para facilitar a organização, o gerenciamento e o acompanhamento de projetos e tarefas pessoais. A aplicação permite que a pessoa usuária cadastre projetos, organize atividades, defina prioridades e acompanhe o andamento de cada tarefa.
 
 A proposta é reunir, em um único ambiente, as principais informações necessárias para o gerenciamento de atividades, proporcionando uma visualização mais clara daquilo que precisa ser realizado, do que está em andamento e do que já foi concluído.
 
@@ -10,7 +10,7 @@ O sistema será desenvolvido utilizando tecnologias de desenvolvimento web, tend
 
 ## 2. Problema identificado
 
-A organização de projetos e atividades pode se tornar complicada quando as informações ficam distribuídas entre diferentes documentos, anotações, mensagens ou ferramentas. Essa situação pode dificultar o acompanhamento das tarefas, a identificação dos responsáveis e a visualização do progresso de um projeto.
+A organização de projetos e atividades pode se tornar complicada quando as informações ficam distribuídas entre diferentes documentos, anotações ou ferramentas. Essa situação pode dificultar o acompanhamento das tarefas e a visualização do progresso de um projeto.
 
 Além disso, a falta de organização pode provocar esquecimentos, atrasos, dificuldades na divisão das atividades e pouca clareza sobre quais tarefas ainda precisam ser realizadas.
 
@@ -20,7 +20,7 @@ O TaskFlow busca solucionar esse problema oferecendo um ambiente digital no qual
 
 ## 3. Justificativa
 
-O desenvolvimento do TaskFlow justifica-se pela importância de uma boa organização para a execução de projetos e atividades. Ter acesso às informações de maneira centralizada facilita o planejamento, melhora o acompanhamento das tarefas e contribui para uma distribuição mais eficiente das responsabilidades.
+O desenvolvimento do TaskFlow justifica-se pela importância de uma boa organização para a execução de projetos e atividades. Ter acesso às informações de maneira centralizada facilita o planejamento, melhora o acompanhamento das tarefas e contribui para organizar as responsabilidades individuais.
 
 A utilização de um sistema web também proporciona maior praticidade, pois permite consultar e gerenciar as informações por meio de uma interface acessível em navegadores.
 
@@ -36,7 +36,7 @@ Desenvolver um sistema web para gerenciamento de projetos e tarefas, permitindo 
 
 - Permitir o cadastro e o gerenciamento de projetos.
 - Possibilitar a criação de tarefas vinculadas a projetos.
-- Permitir a definição de responsáveis pelas tarefas.
+- Permitir identificar o responsável associado a uma tarefa.
 - Possibilitar a classificação das tarefas de acordo com suas prioridades.
 - Permitir a atualização e o acompanhamento do status das tarefas.
 - Facilitar a visualização dos projetos e das atividades relacionadas.
@@ -45,14 +45,7 @@ Desenvolver um sistema web para gerenciamento de projetos e tarefas, permitindo 
 
 ## 5. Público-alvo
 
-O TaskFlow é destinado a pessoas que precisam organizar projetos e acompanhar atividades de maneira prática, especialmente:
-
-- Estudantes que desenvolvem trabalhos individuais ou em grupo.
-- Pequenas equipes que precisam dividir e acompanhar tarefas.
-- Pessoas que organizam projetos pessoais e atividades do cotidiano.
-- Grupos que necessitam visualizar o andamento de diferentes atividades.
-
-O sistema busca atender principalmente usuários que precisam de uma ferramenta simples para organizar suas demandas, sem depender de processos complexos de gerenciamento.
+O TaskFlow é destinado a uma pessoa que precisa organizar seus projetos pessoais, estudos e atividades do cotidiano. O sistema não oferece gerenciamento de equipes, colaboração entre usuários ou compartilhamento de projetos.
 
 ## 6. Funcionamento geral do sistema
 
@@ -62,7 +55,7 @@ Inicialmente, o usuário poderá acessar o sistema e visualizar o Dashboard, que
 
 A partir da navegação principal, será possível acessar a área de projetos, na qual o usuário poderá cadastrar novos projetos, visualizar os existentes, editar suas informações ou excluí-los.
 
-Cada projeto poderá possuir diversas tarefas vinculadas. Na área de tarefas, o usuário poderá cadastrar atividades, informar seus títulos e descrições, definir responsáveis, estabelecer prioridades e acompanhar seus respectivos status.
+Cada projeto poderá possuir diversas tarefas vinculadas. Na área de tarefas, a pessoa usuária poderá cadastrar atividades, informar seus títulos e descrições, registrar o responsável associado, estabelecer prioridades e acompanhar seus respectivos status.
 
 Dessa forma, as tarefas estarão relacionadas aos projetos correspondentes, permitindo uma organização mais clara das atividades e facilitando o acompanhamento do desenvolvimento de cada projeto.
 
@@ -80,7 +73,7 @@ Possibilitar a criação de tarefas relacionadas a projetos existentes, permitin
 
 ### 7.3. Definição de responsáveis
 
-Permitir informar quem será responsável pela realização de cada tarefa, facilitando a identificação das pessoas envolvidas nas atividades.
+Permitir identificar o responsável associado a cada tarefa, sem oferecer gerenciamento de equipes ou colaboração entre pessoas.
 
 ### 7.4. Definição de prioridades
 
@@ -118,7 +111,7 @@ Para o desenvolvimento do TaskFlow, serão utilizadas as seguintes tecnologias:
 
 Com o desenvolvimento do TaskFlow, espera-se disponibilizar uma aplicação web funcional capaz de centralizar o gerenciamento de projetos e tarefas, tornando a organização das atividades mais simples e eficiente.
 
-Espera-se que os usuários consigam cadastrar projetos, adicionar tarefas, definir responsáveis e prioridades e acompanhar o andamento das atividades por meio de uma interface intuitiva.
+Espera-se que a pessoa usuária consiga cadastrar projetos, adicionar tarefas, registrar o responsável associado, definir prioridades e acompanhar o andamento das atividades por meio de uma interface intuitiva.
 
 Além disso, o projeto deverá demonstrar a aplicação prática dos conhecimentos adquiridos durante o curso Técnico Integrado em Informática, envolvendo desenvolvimento frontend e backend, integração com banco de dados, organização de código e utilização de ferramentas de versionamento.
 

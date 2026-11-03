@@ -16,26 +16,31 @@
     </section>
 
     <section class="dashboard-stats" aria-label="Resumo de projetos e tarefas">
-        <article class="dashboard-stat">
+        <a class="dashboard-stat dashboard-stat-link" href="{% url 'core:projeto_lista' %}">
             <span class="dashboard-stat-label">Projetos</span>
             <strong class="dashboard-stat-value">{{ total_projetos }}</strong>
             <span class="dashboard-stat-note">cadastrados</span>
-        </article>
-        <article class="dashboard-stat">
+        </a>
+        <a class="dashboard-stat dashboard-stat-link" href="{% url 'core:tarefa_lista' %}">
             <span class="dashboard-stat-label">Tarefas</span>
             <strong class="dashboard-stat-value">{{ total_tarefas }}</strong>
             <span class="dashboard-stat-note">no total</span>
-        </article>
-        <article class="dashboard-stat dashboard-stat-pending">
+        </a>
+        <a class="dashboard-stat dashboard-stat-pending dashboard-stat-link" href="{% url 'core:tarefa_lista' %}?status=a_fazer">
             <span class="dashboard-stat-label">Pendentes</span>
             <strong class="dashboard-stat-value">{{ tarefas_a_fazer }}</strong>
             <span class="dashboard-stat-note">a fazer</span>
-        </article>
-        <article class="dashboard-stat dashboard-stat-complete">
+        </a>
+        <a class="dashboard-stat dashboard-stat-progress dashboard-stat-link" href="{% url 'core:tarefa_lista' %}?status=em_andamento">
+            <span class="dashboard-stat-label">Em andamento</span>
+            <strong class="dashboard-stat-value">{{ tarefas_em_andamento }}</strong>
+            <span class="dashboard-stat-note">em execução</span>
+        </a>
+        <a class="dashboard-stat dashboard-stat-complete dashboard-stat-link" href="{% url 'core:tarefa_lista' %}?status=concluida">
             <span class="dashboard-stat-label">Concluídas</span>
             <strong class="dashboard-stat-value">{{ tarefas_concluidas }}</strong>
             <span class="dashboard-stat-note">finalizadas</span>
-        </article>
+        </a>
     </section>
 
     <div class="dashboard-sections">
@@ -76,7 +81,7 @@
                     {% for tarefa in tarefas_em_aberto %}
                         <li class="dashboard-task-item">
                             <div class="dashboard-task-main">
-                                <a class="dashboard-item-title" href="{% url 'core:projeto_detalhe' tarefa.projeto_id %}">{{ tarefa.titulo }}</a>
+                                <a class="dashboard-item-title" href="{% url 'core:tarefa_editar' tarefa.pk %}">{{ tarefa.titulo }}</a>
                                 <a class="dashboard-task-project" href="{% url 'core:projeto_detalhe' tarefa.projeto_id %}">{{ tarefa.projeto.nome }}</a>
                             </div>
                             <div class="dashboard-task-meta">
@@ -104,7 +109,7 @@
                 {% for tarefa in tarefas_recentes %}
                     <li class="dashboard-task-item">
                         <div class="dashboard-task-main">
-                            <a class="dashboard-item-title" href="{% url 'core:projeto_detalhe' tarefa.projeto_id %}">{{ tarefa.titulo }}</a>
+                            <a class="dashboard-item-title" href="{% url 'core:tarefa_editar' tarefa.pk %}">{{ tarefa.titulo }}</a>
                             <span class="dashboard-task-project">{{ tarefa.projeto.nome }}</span>
                         </div>
                         <div class="dashboard-task-meta">
@@ -114,6 +119,16 @@
                     </li>
                 {% endfor %}
             </ul>
+        </section>
+    {% else %}
+        <section class="dashboard-panel dashboard-recent-panel" aria-labelledby="recent-activity-heading">
+            <div class="dashboard-panel-heading">
+                <div>
+                    <h2 id="recent-activity-heading">Atualizações recentes</h2>
+                    <p>As tarefas atualizadas recentemente aparecerão aqui.</p>
+                </div>
+            </div>
+            <p class="dashboard-empty">Ainda não há atualizações de tarefas.</p>
         </section>
     {% endif %}
 {% endblock %}

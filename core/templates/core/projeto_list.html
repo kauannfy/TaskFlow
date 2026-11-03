@@ -18,7 +18,7 @@
                 <article class="dashboard-panel project-card">
                     <div class="project-card-heading">
                         <h2>
-                            <a class="dashboard-item-title" href="{% url 'core:projeto_editar' projeto.pk %}">{{ projeto.nome }}</a>
+                            <a class="dashboard-item-title" href="{% url 'core:projeto_detalhe' projeto.pk %}">{{ projeto.nome }}</a>
                         </h2>
                         <span class="dashboard-badge status-{{ projeto.status }}">{{ projeto.get_status_display }}</span>
                     </div>
@@ -42,7 +42,10 @@
 
                     <div class="project-card-footer">
                         <span class="project-created">Criado em {{ projeto.criado_em|date:"d/m/Y" }}</span>
-                        <a class="dashboard-text-link" href="{% url 'core:projeto_editar' projeto.pk %}">Editar projeto</a>
+                        <div class="project-card-actions">
+                            <a class="dashboard-text-link" href="{% url 'core:projeto_detalhe' projeto.pk %}">Detalhes</a>
+                            <a class="dashboard-text-link" href="{% url 'core:projeto_editar' projeto.pk %}">Editar</a>
+                        </div>
                     </div>
                 </article>
             {% endfor %}

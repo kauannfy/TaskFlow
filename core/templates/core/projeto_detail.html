@@ -1,0 +1,98 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ object.nome }} | TaskFlow{% endblock %}
+{% block page_title %}Detalhes do projeto{% endblock %}
+
+{% block content %}
+    <section class="project-page-intro detail-page-intro" aria-labelledby="project-title">
+        <div>
+            <h2 id="project-title">{{ object.nome }}</h2>
+            <p>Acompanhe as informações e tarefas deste projeto.</p>
+        </div>
+        <div class="detail-actions">
+            <a class="dashboard-button dashboard-button-secondary" href="{% url 'core:projeto_lista' %}">Voltar aos projetos</a>
+            <a class="dashboard-button dashboard-button-primary" href="{% url 'core:tarefa_nova' %}?projeto={{ object.pk }}">Nova tarefa</a>
+        </div>
+    </section>
+
+    <section class="dashboard-panel project-detail-panel" aria-label="Informações do projeto">
+        <div class="project-detail-heading">
+            <h2>Informações do projeto</h2>
+            <span class="dashboard-badge status-{{ object.status }}">{{ object.get_status_display }}</span>
+        </div>
+
+        {% if object.descricao %}
+            <p class="project-detail-description">{{ object.descricao|linebreaksbr }}</p>
+        {% else %}
+            <p class="project-detail-description project-description-empty">Este projeto não possui descrição.</p>
+        {% endif %}
+
+        <dl class="project-dates project-detail-dates">
+            <div>
+                <dt>Data de início</dt>
+                <dd>{{ object.data_inicio|date:"d/m/Y"|default:"—" }}</dd>
+            </div>
+            <div>
+                <dt>Término previsto</dt>
+                <dd>{{ object.data_fim_prevista|date:"d/m/Y"|default:"—" }}</dd>
+            </div>
+            <div>
+                <dt>Criado em</dt>
+                <dd>{{ object.criado_em|date:"d/m/Y" }}</dd>
+            </div>
+            <div>
+                <dt>Progresso das tarefas</dt>
+                <dd>{{ object.percentual_concluido }}%</dd>
+            </div>
+        </dl>
+
+        <div class="project-detail-actions">
+            <a class="dashboard-button dashboard-button-secondary" href="{% url 'core:projeto_editar' object.pk %}">Editar projeto</a>
+            <a class="dashboard-button dashboard-button-danger" href="{% url 'core:projeto_excluir' object.pk %}">Excluir projeto</a>
+        </div>
+    </section>
+
+    <section class="project-detail-tasks" aria-labelledby="project-tasks-heading">
+        <div class="dashboard-panel-heading">
+            <div>
+                <h2 id="project-tasks-heading">Tarefas do projeto</h2>
+                <p>Atividades organizadas por status.</p>
+            </div>
+        </div>
+
+        {% if object.tarefas.exists %}
+            <div class="project-task-columns">
+                {% for rotulo, tarefas in colunas %}
+                    <section class="dashboard-panel project-task-column" aria-label="{{ rotulo }}">
+                        <h3>{{ rotulo }}</h3>
+                        {% if tarefas %}
+                            <ul class="project-task-list">
+                                {% for tarefa in tarefas %}
+                                    <li class="project-task-item">
+                                        <div class="project-task-heading">
+                                            <h4>{{ tarefa.titulo }}</h4>
+                                            <span class="dashboard-badge priority-{{ tarefa.prioridade }}">{{ tarefa.get_prioridade_display }}</span>
+                                        </div>
+                                        <p>{{ tarefa.nome_responsavel }}</p>
+                                        <div class="project-task-actions">
+                                            <a class="dashboard-text-link" href="{% url 'core:tarefa_editar' tarefa.pk %}">Editar</a>
+                                            <a class="dashboard-text-link dashboard-danger-link" href="{% url 'core:tarefa_excluir' tarefa.pk %}">Excluir</a>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="dashboard-empty">Nenhuma tarefa {{ rotulo|lower }}.</p>
+                        {% endif %}
+                    </section>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="dashboard-panel project-empty">
+                <h3>Este projeto ainda não possui tarefas</h3>
+                <p>Cadastre uma tarefa para acompanhar as atividades deste projeto.</p>
+                <a class="dashboard-button dashboard-button-primary" href="{% url 'core:tarefa_nova' %}?projeto={{ object.pk }}">Cadastrar tarefa</a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

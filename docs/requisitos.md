@@ -62,7 +62,7 @@ O sistema deverá permitir a exclusão de tarefas cadastradas quando necessário
 
 ### RF10 — Definir responsáveis pelas tarefas
 
-O sistema deverá permitir informar o responsável pela realização de cada tarefa, facilitando a identificação de quem deverá executar a atividade.
+O sistema deverá permitir associar a cada tarefa um usuário já registrado no Django como responsável, facilitando sua identificação. No escopo individual do TaskFlow, esse campo não representa gerenciamento de equipes, cadastro de usuários ou colaboração entre pessoas.
 
 ### RF11 — Definir prioridades das tarefas
 
